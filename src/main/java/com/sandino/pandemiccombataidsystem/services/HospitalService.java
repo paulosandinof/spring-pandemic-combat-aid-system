@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.sandino.pandemiccombataidsystem.dtos.HospitalDTO;
+import com.sandino.pandemiccombataidsystem.dtos.OccupationPercentageDTO;
 import com.sandino.pandemiccombataidsystem.entities.Hospital;
 import com.sandino.pandemiccombataidsystem.entities.Resource;
 import com.sandino.pandemiccombataidsystem.repositories.HospitalRepository;
@@ -26,6 +27,10 @@ public class HospitalService {
         this.resourceTypeRepository = resourceTypeRepository;
     }
 
+    public List<Hospital> list() {
+        return hospitalRepository.findAll();
+    }
+
     public Hospital create(HospitalDTO hospitalDTO) {
 
         // Cria os objetos Resource para serem salvos
@@ -42,6 +47,18 @@ public class HospitalService {
                 resources);
 
         // Salva o hospital
+        return hospitalRepository.save(hospital);
+    }
+
+    public Hospital retrieve(String hospitalId) {
+        return hospitalRepository.findById(hospitalId).get();
+    }
+
+    public Hospital updateOccupationPercentage(String hospitalId, OccupationPercentageDTO occupationPercentageDTO) {
+        Hospital hospital = hospitalRepository.findById(hospitalId).get();
+
+        hospital.setOccupationPercentage(occupationPercentageDTO.getOccupationPercentage());
+
         return hospitalRepository.save(hospital);
     }
 }

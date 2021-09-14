@@ -18,6 +18,9 @@ public class HospitalDTO {
 
     private List<ResourceDTO> resources;
 
+    public HospitalDTO() {
+    }
+
     public HospitalDTO(String name, String address, String cnpj, double latitude, double longitude,
             double occupationPercentage, List<ResourceDTO> resources) {
         this.name = name;

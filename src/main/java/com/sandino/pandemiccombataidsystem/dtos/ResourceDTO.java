@@ -6,6 +6,9 @@ public class ResourceDTO {
 
     private String type;
 
+    public ResourceDTO() {
+    }
+
     public ResourceDTO(String name, String type) {
         this.name = name;
         this.type = type;
