@@ -11,8 +11,8 @@ import org.hibernate.annotations.GenericGenerator;
 public class ResourceType {
 
     @Id
-    // @GeneratedValue(generator = "uuid2")
-    // @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(columnDefinition = "VARCHAR(255)")
     private String id;
 
