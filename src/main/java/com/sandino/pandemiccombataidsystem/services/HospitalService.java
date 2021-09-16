@@ -1,5 +1,6 @@
 package com.sandino.pandemiccombataidsystem.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,11 +8,13 @@ import com.sandino.pandemiccombataidsystem.dtos.HospitalDTO;
 import com.sandino.pandemiccombataidsystem.dtos.OccupationPercentageDTO;
 import com.sandino.pandemiccombataidsystem.entities.Hospital;
 import com.sandino.pandemiccombataidsystem.entities.Resource;
+import com.sandino.pandemiccombataidsystem.exceptions.ApiRequestException;
 import com.sandino.pandemiccombataidsystem.repositories.HospitalRepository;
 import com.sandino.pandemiccombataidsystem.repositories.ResourceRepository;
 import com.sandino.pandemiccombataidsystem.repositories.ResourceTypeRepository;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class HospitalService {
@@ -31,34 +34,43 @@ public class HospitalService {
         return hospitalRepository.findAll();
     }
 
+    @Transactional
     public Hospital create(HospitalDTO hospitalDTO) {
 
-        // Cria os objetos Resource para serem salvos
-        List<Resource> resources = hospitalDTO.getResources().stream().map(
-                resource -> new Resource(resource.getName(), resourceTypeRepository.findById(resource.getType()).get()))
+        // Create hospital object
+        Hospital hospital = new Hospital(hospitalDTO.getName(), hospitalDTO.getAddress(), hospitalDTO.getCnpj(),
+                hospitalDTO.getLatitude(), hospitalDTO.getLongitude(), hospitalDTO.getOccupationPercentage(), LocalDateTime.now());
+
+        // Create the resources to be saved
+        List<Resource> resources = hospitalDTO.getResources().stream()
+                .map(resource -> new Resource(resource.getName(), hospital,
+                        resourceTypeRepository.findById(resource.getType())
+                                .orElseThrow(() -> new ApiRequestException(
+                                        "Could not find a resource type with ID: " + resource.getType()))))
                 .collect(Collectors.toList());
 
-        // Salva os Resources
+        hospital.setResources(resources);
+
+        hospitalRepository.save(hospital);
+
         resourceRepository.saveAll(resources);
 
-        // Cria o objeto Hospital
-        Hospital hospital = new Hospital(hospitalDTO.getName(), hospitalDTO.getAddress(), hospitalDTO.getCnpj(),
-                hospitalDTO.getLatitude(), hospitalDTO.getLongitude(), hospitalDTO.getOccupationPercentage(),
-                resources);
-
-        // Salva o hospital
-        return hospitalRepository.save(hospital);
+        return hospital;
     }
 
     public Hospital retrieve(String hospitalId) {
-        return hospitalRepository.findById(hospitalId).get();
+        return hospitalRepository.findById(hospitalId)
+                .orElseThrow(() -> new ApiRequestException("Could not find a hospital with ID: " + hospitalId));
     }
 
+    @Transactional
     public Hospital updateOccupationPercentage(String hospitalId, OccupationPercentageDTO occupationPercentageDTO) {
-        Hospital hospital = hospitalRepository.findById(hospitalId).get();
+        Hospital hospital = hospitalRepository.findById(hospitalId)
+                .orElseThrow(() -> new ApiRequestException("Could not find a hospital with ID: " + hospitalId));
 
         hospital.setOccupationPercentage(occupationPercentageDTO.getOccupationPercentage());
+        hospital.setOccupationUpdatedAt(LocalDateTime.now());
 
-        return hospitalRepository.save(hospital);
+        return hospital;
     }
 }
