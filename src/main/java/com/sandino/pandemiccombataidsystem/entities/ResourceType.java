@@ -1,11 +1,15 @@
 package com.sandino.pandemiccombataidsystem.entities;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 public class ResourceType {
@@ -22,13 +26,26 @@ public class ResourceType {
     @Column
     private int value;
 
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
     protected ResourceType() {
     }
 
-    public ResourceType(String id, String name, int value) {
+    public ResourceType(String name, int value) {
+        this.name = name;
+        this.value = value;
+    }
+
+    public ResourceType(String id, String name, int value, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.value = value;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public String getId() {
@@ -55,8 +72,25 @@ public class ResourceType {
         this.value = value;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     @Override
     public String toString() {
-        return "ResourceType [id=" + id + ", name=" + name + ", value=" + value + "]";
+        return "ResourceType [createdAt=" + createdAt + ", id=" + id + ", name=" + name + ", updatedAt=" + updatedAt
+                + ", value=" + value + "]";
     }
 }
