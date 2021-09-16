@@ -32,7 +32,6 @@ public class HospitalController {
 
     @PostMapping
     public Hospital store(@RequestBody HospitalDTO hospitalDTO) {
-        System.out.println(hospitalDTO);
         return hospitalService.create(hospitalDTO);
     }
 
